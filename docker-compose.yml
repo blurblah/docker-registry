@@ -1,0 +1,32 @@
+version: "2"
+
+services:
+  registry:
+    image: library/registry:2.5
+    environment:
+      - REGISTRY_HTTP_ADDR=0.0.0.0:5000
+      - REGISTRY_HTTP_DEBUG_ADDR=0.0.0.0:5001
+    volumes:
+      - ./conf/registry.yml:/etc/docker/registry/config.yml:ro
+      - ./secrets/auth.crt:/etc/docker/registry/auth.crt:ro
+    ports:
+      - 5000:5000
+      - 5001:5001
+    restart: unless-stopped
+
+  registry-web:
+    image: hyper/docker-registry-web
+    environment:
+      - REGISTRY_URL=http://YOUR_REGISTRY_HOST:5000/v2
+      - REGISTRY_NAME=YOUR_REGISTRY_HOST:5000
+      - REGISTRY_READONLY=false
+    volumes:
+      - ./conf/registry-web.yml:/conf/config.yml:ro
+      - ./secrets/auth.key:/conf/auth.key
+      - ./db:/data
+    ports:
+      - 8080:8080
+    links:
+      - registry
+    restart: unless-stopped
+

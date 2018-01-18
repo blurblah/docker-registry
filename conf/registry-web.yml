@@ -1,0 +1,6 @@
+registry:
+  auth:
+    enabled: true
+    issuer: YOUR_ISSUER
+    key: /conf/auth.key
+
